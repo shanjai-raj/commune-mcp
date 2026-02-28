@@ -1,9 +1,10 @@
 # Email for Claude Desktop, Cursor & Windsurf
 
 [![PyPI](https://img.shields.io/pypi/v/commune-mcp?color=blue&label=PyPI)](https://pypi.org/project/commune-mcp/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/commune-mcp?label=installs%2Fmo)](https://pypi.org/project/commune-mcp/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/commune-mcp/)
 [![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![commune.email](https://img.shields.io/badge/docs-commune.email-blue)](https://commune.email)
+[![commune.email](https://img.shields.io/badge/docs-commune.email-blue)](https://commune.email/?ref=commune-mcp)
 
 Give Claude (or any MCP client) a real email inbox. Install in 30 seconds — no cloning required.
 
@@ -31,7 +32,7 @@ npx @smithery/cli install commune --client claude
 
 ### 1. Get your API key
 
-Create an API key from your [Commune dashboard](https://commune.email). It starts with `comm_`.
+Create an API key from your [Commune dashboard](https://commune.email/?ref=commune-mcp). It starts with `comm_`.
 
 ### 2. Add to your MCP client
 
