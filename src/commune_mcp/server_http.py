@@ -2,8 +2,9 @@
 Commune MCP — Streamable HTTP transport.
 
 Deployed at https://mcp.commune.email for Smithery registry.
-Pass your API key via query param or header:
+MCP endpoint: POST https://mcp.commune.email/mcp
 
+Pass your API key via query param or header:
   ?api_key=comm_...
   X-Commune-Api-Key: comm_...
   Authorization: Bearer comm_...
@@ -11,23 +12,44 @@ Pass your API key via query param or header:
 
 from __future__ import annotations
 
+import json
 import os
 
 import uvicorn
+from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse
-
-from starlette.responses import PlainTextResponse
-from starlette.routing import Route
+from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.routing import Mount, Route
 
 from commune_mcp.server import _api_key_ctx, mcp
 
+# ── Well-known server card (Smithery discovery) ───────────────────────────────
+
+_SERVER_CARD = {
+    "name": "Commune Email & SMS",
+    "description": (
+        "Email and SMS infrastructure for AI agents. "
+        "Create inboxes, send email, read threads, provision phone numbers, send SMS."
+    ),
+    "vendor": "Commune",
+    "version": "0.1.2",
+    "homepage": "https://commune.email",
+    "license": "MIT",
+    "capabilities": {
+        "tools": True,
+        "resources": False,
+        "prompts": False,
+    },
+}
+
+
+# ── Middleware ────────────────────────────────────────────────────────────────
 
 class _ApiKeyMiddleware(BaseHTTPMiddleware):
     """Extract per-request Commune API key and inject into ContextVar."""
 
-    EXEMPT = {"/health", "/"}
+    EXEMPT = {"/health", "/", "/.well-known/mcp/server-card.json"}
 
     async def dispatch(self, request: Request, call_next):
         if request.url.path in self.EXEMPT:
@@ -58,22 +80,26 @@ class _ApiKeyMiddleware(BaseHTTPMiddleware):
             _api_key_ctx.reset(token)
 
 
+# ── Route handlers ────────────────────────────────────────────────────────────
+
 async def _health(request: Request):
     return PlainTextResponse("ok")
 
 
-def create_app():
-    """Build the Starlette ASGI app with API key middleware."""
-    from starlette.applications import Starlette
-    from starlette.routing import Mount
+async def _server_card(request: Request):
+    return JSONResponse(_SERVER_CARD)
 
+
+# ── App factory ───────────────────────────────────────────────────────────────
+
+def create_app() -> Starlette:
     mcp_app = mcp.streamable_http_app()
     mcp_app.add_middleware(_ApiKeyMiddleware)
 
-    # Wrap with a top-level Starlette app so /health bypasses MCP routing
     return Starlette(
         routes=[
             Route("/health", _health),
+            Route("/.well-known/mcp/server-card.json", _server_card),
             Mount("/", app=mcp_app),
         ]
     )
