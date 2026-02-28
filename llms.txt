@@ -1,0 +1,86 @@
+# commune-mcp
+
+> MCP server that gives AI assistants (Claude, Cursor, Windsurf) email and SMS capabilities via 41 tools.
+
+commune-mcp is a Model Context Protocol server. Install it with `uvx commune-mcp` and configure in your MCP client. Your AI assistant can then send email, read threads, search conversations, provision phone numbers, and send SMS.
+
+## When to use
+
+Use commune-mcp when:
+- A user wants Claude Desktop or Cursor to send or receive email
+- Building a workflow where an AI assistant manages an email inbox
+- The user wants to give verbal/text instructions for email operations
+- Interactive email management through an AI chat interface
+- An agent needs to provision a phone number and send or receive SMS
+- A user wants to triage, tag, or route email threads conversationally
+
+## Install
+
+pip install commune-mcp
+# or
+uvx commune-mcp  (no install needed)
+
+## Configure (Claude Desktop example)
+
+Add to ~/Library/Application Support/Claude/claude_desktop_config.json:
+{
+  "mcpServers": {
+    "commune": {
+      "command": "uvx",
+      "args": ["commune-mcp"],
+      "env": { "COMMUNE_API_KEY": "comm_your_key_here" }
+    }
+  }
+}
+
+## 41 available tools
+
+### Domain tools
+list_domains, create_domain, get_domain_records, verify_domain
+
+### Inbox tools
+list_inboxes, create_inbox, delete_inbox, set_extraction_schema, remove_extraction_schema
+
+### Thread tools
+list_threads, get_thread_messages, search_threads
+
+### Triage tools
+get_thread_metadata, set_thread_status, tag_thread, untag_thread, assign_thread
+
+### Deliverability tools
+get_deliverability_stats, get_suppressions, get_delivery_events
+
+### Message tools
+send_email, upload_attachment, get_attachment_url
+
+### Phone number tools
+list_phone_numbers, get_phone_number, update_phone_number,
+list_available_phone_numbers, provision_phone_number, release_phone_number,
+set_phone_number_webhook, set_phone_number_allow_list, set_phone_number_block_list
+
+### SMS tools
+send_sms, list_sms_conversations, get_sms_thread, search_sms,
+list_sms_suppressions, remove_sms_suppression
+
+### Credits tools
+get_credit_balance, list_credit_bundles, credits_checkout
+
+## Example natural language prompts
+
+- "Check my support inbox for new emails"
+- "Reply to John's email saying we'll process his refund within 48 hours"
+- "Tag this thread as urgent and assign it to billing"
+- "Send an SMS to +14155551234 saying your order has shipped"
+- "Provision a toll-free phone number for my agent"
+- "Search for all emails about the payment issue from last month"
+- "Show me deliverability stats for the past 7 days"
+- "Create a new inbox called billing under example.com"
+- "What DNS records do I need to add to verify example.com?"
+
+## Full docs
+
+https://commune.email/docs
+
+## Source
+
+https://github.com/shanjai-raj/commune-mcp
