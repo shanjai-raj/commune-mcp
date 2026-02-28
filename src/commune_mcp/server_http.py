@@ -2,20 +2,20 @@
 Commune MCP — Streamable HTTP transport.
 
 Deployed at https://mcp.commune.email for Smithery registry.
-MCP endpoint: POST https://mcp.commune.email/mcp
+MCP endpoint: POST https://mcp.commune.email/?api_key=comm_...
 
-Pass your API key via query param or header:
-  ?api_key=comm_...
-  X-Commune-Api-Key: comm_...
-  Authorization: Bearer comm_...
+Smithery appends the api_key as a query parameter automatically.
 """
 
 from __future__ import annotations
 
-import json
 import os
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
 
+import anyio
 import uvicorn
+from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -47,9 +47,9 @@ _SERVER_CARD = {
 # ── Middleware ────────────────────────────────────────────────────────────────
 
 class _ApiKeyMiddleware(BaseHTTPMiddleware):
-    """Extract per-request Commune API key and inject into ContextVar."""
+    """Extract per-request Commune API key from query param or header."""
 
-    EXEMPT = {"/health", "/", "/.well-known/mcp/server-card.json"}
+    EXEMPT = {"/health", "/.well-known/mcp/server-card.json"}
 
     async def dispatch(self, request: Request, call_next):
         if request.url.path in self.EXEMPT:
@@ -65,10 +65,7 @@ class _ApiKeyMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 {
                     "error": "api_key_required",
-                    "message": (
-                        "Pass your Commune API key via ?api_key=comm_... "
-                        "or X-Commune-Api-Key header. Get a key at commune.email"
-                    ),
+                    "message": "Pass your Commune API key via ?api_key=comm_... or X-Commune-Api-Key header.",
                 },
                 status_code=401,
             )
@@ -93,16 +90,39 @@ async def _server_card(request: Request):
 # ── App factory ───────────────────────────────────────────────────────────────
 
 def create_app() -> Starlette:
-    mcp_app = mcp.streamable_http_app()
-    mcp_app.add_middleware(_ApiKeyMiddleware)
+    """
+    Build the ASGI app.
 
-    return Starlette(
+    Mounts the MCP session manager at / so Smithery can POST to /?api_key=...
+    Uses FastMCP's internal session manager directly so the lifespan (task group)
+    is owned by this app — avoids the 'Task group is not initialized' error.
+    """
+    session_manager = StreamableHTTPSessionManager(
+        app=mcp._mcp_server,
+        event_store=None,
+        json_response=False,
+        stateless=False,
+    )
+
+    async def _handle_mcp(scope, receive, send):
+        await session_manager.handle_request(scope, receive, send)
+
+    @asynccontextmanager
+    async def _lifespan(app: Starlette) -> AsyncIterator[None]:
+        async with anyio.create_task_group() as tg:
+            session_manager.task_group = tg
+            yield
+
+    app = Starlette(
+        lifespan=_lifespan,
         routes=[
             Route("/health", _health),
             Route("/.well-known/mcp/server-card.json", _server_card),
-            Mount("/", app=mcp_app),
-        ]
+            Mount("/", app=_handle_mcp),  # MCP at / — Smithery POSTs to /?api_key=...
+        ],
     )
+    app.add_middleware(_ApiKeyMiddleware)
+    return app
 
 
 def main():
