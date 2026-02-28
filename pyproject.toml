@@ -23,17 +23,20 @@ classifiers = [
     "Topic :: Communications :: Email",
 ]
 dependencies = [
-    "mcp>=1.2.0",
+    "mcp>=1.6.0",
     "httpx>=0.25.0",
+    "uvicorn>=0.30.0",
+    "starlette>=0.40.0",
 ]
 
 [project.scripts]
 commune-mcp = "commune_mcp.server:main"
+commune-mcp-http = "commune_mcp.server_http:main"
 
 [project.urls]
-Homepage = "https://commune.sh"
-Documentation = "https://docs.commune.sh"
-Repository = "https://github.com/commune-sh/commune-mcp"
+Homepage = "https://commune.email"
+Documentation = "https://docs.commune.email"
+Repository = "https://github.com/shanjai-raj/commune-mcp"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/commune_mcp"]

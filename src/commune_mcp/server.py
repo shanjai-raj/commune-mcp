@@ -21,6 +21,7 @@ Configure in Claude Desktop / Cursor / Windsurf:
 
 from __future__ import annotations
 
+import contextvars
 import json
 import os
 import sys
@@ -35,9 +36,13 @@ MCP_VERSION = "0.1.2"
 API_VERSION = "v1"  # Commune API version this MCP is tested against
 MIN_API_VERSION = "v1"  # Minimum compatible API version
 
-API_KEY = os.environ.get("COMMUNE_API_KEY", "")
+# Per-request API key — set by HTTP middleware; falls back to env var for stdio mode.
+_api_key_ctx: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "commune_api_key", default=os.environ.get("COMMUNE_API_KEY", "")
+)
+
 BASE_URL = os.environ.get(
-    "COMMUNE_BASE_URL", "https://web-production-3f46f.up.railway.app"
+    "COMMUNE_BASE_URL", "https://api.commune.email"
 ).rstrip("/")
 
 mcp = FastMCP(
@@ -52,7 +57,7 @@ mcp = FastMCP(
 
 def _headers() -> dict[str, str]:
     return {
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {_api_key_ctx.get()}",
         "Content-Type": "application/json",
     }
 
@@ -617,7 +622,8 @@ def main():
         print(f"commune-mcp {MCP_VERSION} (API: {API_VERSION})")
         sys.exit(0)
 
-    if not API_KEY:
+    api_key = os.environ.get("COMMUNE_API_KEY", "")
+    if not api_key:
         print(
             "Error: Set the COMMUNE_API_KEY environment variable.\n"
             "  export COMMUNE_API_KEY=comm_...",
@@ -625,6 +631,7 @@ def main():
         )
         sys.exit(1)
 
+    _api_key_ctx.set(api_key)
     mcp.run()
 
 
