@@ -1,8 +1,19 @@
-# Commune MCP Server
+# Email for Claude Desktop, Cursor & Windsurf
 
-Email infrastructure for agents — set up an inbox and send your first email in 30 seconds.
+[![PyPI](https://img.shields.io/pypi/v/commune-mcp?color=blue&label=PyPI)](https://pypi.org/project/commune-mcp/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/commune-mcp/)
+[![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![commune.email](https://img.shields.io/badge/docs-commune.email-blue)](https://commune.email)
 
-Programmatic inboxes (~1 line), consistent threads, setup and verify custom domains, send and receive attachments, structured data extraction. Works with Claude Desktop, Cursor, Windsurf, or any [MCP](https://modelcontextprotocol.io) client. Install from PyPI — no cloning required.
+Give Claude (or any MCP client) a real email inbox. Install in 30 seconds — no cloning required.
+
+Your AI agent can:
+- **Read email** — list threads, search by topic, get full message history
+- **Send email** — reply in existing threads, compose fresh messages, attach files
+- **Manage inboxes** — create programmatic inboxes, set up custom domains, triage with tags and status
+- **Track delivery** — get delivery stats, suppression lists, bounce and complaint events
+
+Works with Claude Desktop, Cursor, Windsurf, or any [MCP](https://modelcontextprotocol.io) client.
 
 ---
 
@@ -10,7 +21,7 @@ Programmatic inboxes (~1 line), consistent threads, setup and verify custom doma
 
 ### 1. Get your API key
 
-Create an API key from your [Commune dashboard](https://commune.sh). It starts with `comm_`.
+Create an API key from your [Commune dashboard](https://commune.email). It starts with `comm_`.
 
 ### 2. Add to your MCP client
 
