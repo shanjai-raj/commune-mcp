@@ -13,7 +13,6 @@ import os
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-import anyio
 import uvicorn
 from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 from starlette.applications import Starlette
@@ -109,8 +108,7 @@ def create_app() -> Starlette:
 
     @asynccontextmanager
     async def _lifespan(app: Starlette) -> AsyncIterator[None]:
-        async with anyio.create_task_group() as tg:
-            session_manager.task_group = tg
+        async with session_manager.run():
             yield
 
     app = Starlette(
