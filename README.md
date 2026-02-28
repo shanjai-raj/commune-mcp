@@ -17,6 +17,16 @@ Works with Claude Desktop, Cursor, Windsurf, or any [MCP](https://modelcontextpr
 
 ---
 
+## Install via Smithery
+
+[![smithery badge](https://smithery.ai/badge/commune)](https://smithery.ai/server/commune)
+
+```bash
+npx @smithery/cli install commune --client claude
+```
+
+---
+
 ## Setup
 
 ### 1. Get your API key

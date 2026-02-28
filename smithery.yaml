@@ -1,0 +1,15 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - communeApiKey
+    properties:
+      communeApiKey:
+        type: string
+        description: Your Commune API key (starts with comm_). Get one at https://commune.email
+  commandFunction: |-
+    (config) => ({ command: 'uvx', args: ['commune-mcp'], env: { COMMUNE_API_KEY: config.communeApiKey } })
