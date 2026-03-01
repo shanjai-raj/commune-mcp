@@ -1,0 +1,27 @@
+name: Question
+description: Ask a question about using commune-mcp
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: "For quick answers, check the [cookbook](https://github.com/shanjai-raj/commune-cookbook) and [docs](https://commune.email/docs) first."
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - Claude Desktop
+        - Cursor
+        - Windsurf
+        - Other
+        - N/A
