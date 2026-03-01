@@ -24,10 +24,29 @@ Works with Claude Desktop, Cursor, Windsurf, or any [MCP](https://modelcontextpr
 
 ## Install via Smithery
 
-[![smithery badge](https://smithery.ai/badge/commune)](https://smithery.ai/server/commune)
+[![smithery badge](https://smithery.ai/badge/commune-dev%2Fcommune)](https://smithery.ai/server/commune-dev/commune)
+
+Commune is published on Smithery. One-line install for any supported client:
 
 ```bash
-npx @smithery/cli install commune --client claude
+# Install Smithery CLI (once)
+npm install -g @smithery/cli@latest
+
+# Add Commune to your client
+npx @smithery/cli install commune-dev/commune --client claude      # Claude Desktop
+npx @smithery/cli install commune-dev/commune --client cursor      # Cursor
+npx @smithery/cli install commune-dev/commune --client windsurf    # Windsurf
+npx @smithery/cli install commune-dev/commune --client vscode      # VS Code
+npx @smithery/cli install commune-dev/commune --client claude-code # Claude Code
+npx @smithery/cli install commune-dev/commune --client cline       # Cline
+npx @smithery/cli install commune-dev/commune --client roo-cline   # Roo Code
+npx @smithery/cli install commune-dev/commune --client goose       # Goose
+```
+
+Or connect via the Smithery API for agent-to-agent use:
+
+```
+https://commune--commune-dev.run.tools
 ```
 
 ---
@@ -863,3 +882,4 @@ Yes. Commune uses organizations — multiple team members can share the same acc
 ## License
 
 MIT
+
