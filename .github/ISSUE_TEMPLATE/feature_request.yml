@@ -1,0 +1,36 @@
+name: Feature Request
+description: Suggest a new MCP tool or capability
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "We'd love to hear your ideas!"
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What agent use case does this enable?
+      description: Describe the AI agent task that would become possible or easier
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed MCP tool or behavior
+      description: What should the tool name and parameters look like?
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - Claude Desktop
+        - Cursor
+        - Windsurf
+        - Other
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to your project?
+      options:
+        - Blocking — I cannot ship without this
+        - High — Would significantly improve my workflow
+        - Nice to have
