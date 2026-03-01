@@ -32,7 +32,7 @@ from mcp.server.fastmcp import FastMCP
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
-MCP_VERSION = "0.1.2"
+MCP_VERSION = "0.1.6"
 API_VERSION = "v1"  # Commune API version this MCP is tested against
 MIN_API_VERSION = "v1"  # Minimum compatible API version
 
@@ -239,6 +239,52 @@ def delete_inbox(domain_id: str, inbox_id: str) -> str:
         inbox_id: The inbox ID to delete
     """
     return _fmt(_delete(f"/v1/domains/{domain_id}/inboxes/{inbox_id}"))
+
+
+@mcp.tool()
+def set_extraction_schema(
+    domain_id: str,
+    inbox_id: str,
+    name: str,
+    schema: str,
+    description: Optional[str] = None,
+    enabled: bool = True,
+) -> str:
+    """Set structured extraction schema for an inbox.
+
+    Args:
+        domain_id: Domain ID for the inbox.
+        inbox_id: Inbox ID.
+        name: Schema name.
+        schema: JSON string of a valid JSON Schema object.
+        description: Optional schema description.
+        enabled: Enable extraction immediately (default: true).
+    """
+    try:
+        parsed_schema = json.loads(schema)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid schema JSON: {exc}") from exc
+
+    payload: dict[str, Any] = {
+        "name": name,
+        "schema": parsed_schema,
+        "enabled": enabled,
+    }
+    if description:
+        payload["description"] = description
+
+    return _fmt(
+        _put(
+            f"/v1/domains/{domain_id}/inboxes/{inbox_id}/extraction-schema",
+            payload,
+        )
+    )
+
+
+@mcp.tool()
+def remove_extraction_schema(domain_id: str, inbox_id: str) -> str:
+    """Remove structured extraction schema from an inbox."""
+    return _fmt(_delete(f"/v1/domains/{domain_id}/inboxes/{inbox_id}/extraction-schema"))
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -567,6 +613,7 @@ def get_deliverability_stats(
 @mcp.tool()
 def get_suppressions(
     inbox_id: Optional[str] = None,
+    domain_id: Optional[str] = None,
     limit: int = 50,
 ) -> str:
     """List suppressed email addresses (bounces, complaints, unsubscribes).
@@ -576,11 +623,14 @@ def get_suppressions(
 
     Args:
         inbox_id: Filter by inbox (optional)
+        domain_id: Filter by domain (optional)
         limit: Max results (default: 50)
     """
     params: dict[str, Any] = {"limit": limit}
     if inbox_id:
         params["inbox_id"] = inbox_id
+    if domain_id:
+        params["domain_id"] = domain_id
     return _fmt(_get("/v1/delivery/suppressions", params))
 
 
@@ -588,6 +638,7 @@ def get_suppressions(
 def get_delivery_events(
     message_id: Optional[str] = None,
     inbox_id: Optional[str] = None,
+    domain_id: Optional[str] = None,
     event_type: Optional[str] = None,
     limit: int = 50,
 ) -> str:
@@ -598,6 +649,7 @@ def get_delivery_events(
     Args:
         message_id: Filter events for a specific message
         inbox_id: Filter events by inbox
+        domain_id: Filter events by domain
         event_type: Filter by type: "sent", "delivered", "bounced", "complained", "failed"
         limit: Max results (default: 50)
     """
@@ -606,9 +658,329 @@ def get_delivery_events(
         params["message_id"] = message_id
     if inbox_id:
         params["inbox_id"] = inbox_id
+    if domain_id:
+        params["domain_id"] = domain_id
     if event_type:
         params["event_type"] = event_type
     return _fmt(_get("/v1/delivery/events", params))
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# PHONE NUMBER TOOLS
+# ═════════════════════════════════════════════════════════════════════════════
+
+
+@mcp.tool()
+def list_phone_numbers() -> str:
+    """List all provisioned phone numbers in your Commune account.
+
+    Returns each number's ID, number, type, capabilities, and status.
+    Use the phone_number_id with SMS tools or update_phone_number.
+    """
+    return _fmt(_get("/v1/phone-numbers"))
+
+
+@mcp.tool()
+def get_phone_number(phone_number_id: str) -> str:
+    """Get details for a single provisioned phone number.
+
+    Args:
+        phone_number_id: The phone number ID (from list_phone_numbers)
+    """
+    return _fmt(_get(f"/v1/phone-numbers/{phone_number_id}"))
+
+
+@mcp.tool()
+def update_phone_number(
+    phone_number_id: str,
+    friendly_name: Optional[str] = None,
+    auto_reply: Optional[str] = None,
+) -> str:
+    """Update a phone number's friendly name or auto-reply message.
+
+    Args:
+        phone_number_id: The phone number ID (from list_phone_numbers)
+        friendly_name: Human-readable label for this number (optional)
+        auto_reply: Automatic reply text sent to all inbound SMS (optional, empty string to disable)
+    """
+    payload: dict[str, Any] = {}
+    if friendly_name is not None:
+        payload["friendly_name"] = friendly_name
+    if auto_reply is not None:
+        payload["auto_reply"] = auto_reply
+    return _fmt(_put(f"/v1/phone-numbers/{phone_number_id}", payload))
+
+
+@mcp.tool()
+def list_available_phone_numbers(type: str = "TollFree", country: str = "US", limit: int = 10) -> str:
+    """List available phone numbers to purchase.
+
+    Browse numbers before buying with provision_phone_number.
+
+    Args:
+        type: Number type — "TollFree" (default) or "Local"
+        country: Two-letter country code (default: "US")
+        limit: Max results (default: 10)
+    """
+    return _fmt(_get("/v1/phone-numbers/available", {"type": type, "country": country, "limit": limit}))
+
+
+@mcp.tool()
+def provision_phone_number(
+    phone_number: Optional[str] = None,
+    type: str = "tollfree",
+    friendly_name: Optional[str] = None,
+) -> str:
+    """Purchase/provision a phone number for SMS.
+
+    Deducts credits from your balance. Use list_available_phone_numbers first to browse options.
+
+    Args:
+        phone_number: Specific E.164 number to buy, e.g. "+18005551234" (optional, auto-selected if omitted)
+        type: Number type — "tollfree" (default) or "local"
+        friendly_name: Human-readable label for this number (optional)
+    """
+    payload: dict[str, Any] = {"type": type}
+    if phone_number:
+        payload["phone_number"] = phone_number
+    if friendly_name:
+        payload["friendly_name"] = friendly_name
+    return _fmt(_post("/v1/phone-numbers", payload))
+
+
+@mcp.tool()
+def release_phone_number(phone_number_id: str) -> str:
+    """Release a provisioned phone number.
+
+    The number will be returned to the pool. No credit refund. Message history is retained.
+
+    Args:
+        phone_number_id: The phone number ID to release (from list_phone_numbers)
+    """
+    return _fmt(_delete(f"/v1/phone-numbers/{phone_number_id}"))
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# SMS TOOLS
+# ═════════════════════════════════════════════════════════════════════════════
+
+
+@mcp.tool()
+def send_sms(
+    to: str,
+    body: str,
+    phone_number_id: Optional[str] = None,
+) -> str:
+    """Send an SMS message.
+
+    Returns message_id, message_sid, status, and credits_charged.
+
+    Args:
+        to: Recipient phone number in E.164 format, e.g. "+15551234567"
+        body: SMS message text
+        phone_number_id: Send from a specific phone number (optional, auto-assigned if omitted)
+    """
+    payload: dict[str, Any] = {"to": to, "body": body}
+    if phone_number_id:
+        payload["phone_number_id"] = phone_number_id
+    return _fmt(_post("/v1/sms/send", payload))
+
+
+@mcp.tool()
+def list_sms_conversations(
+    phone_number_id: Optional[str] = None,
+    limit: int = 20,
+) -> str:
+    """List SMS conversation threads.
+
+    Returns a summary of each thread: remote number, last message snippet, and message count.
+
+    Args:
+        phone_number_id: Filter conversations by phone number (optional, lists all if omitted)
+        limit: Max results, 1-100 (default: 20)
+    """
+    params: dict[str, Any] = {"limit": limit}
+    if phone_number_id:
+        params["phone_number_id"] = phone_number_id
+    return _fmt(_get("/v1/sms/conversations", params))
+
+
+@mcp.tool()
+def get_sms_thread(
+    remote_number: str,
+    phone_number_id: str,
+) -> str:
+    """Get all messages in an SMS thread with a specific number.
+
+    Returns chronological messages with direction, body, and timestamps.
+
+    Args:
+        remote_number: The external phone number in E.164 format, e.g. "+15551234567"
+        phone_number_id: Your Commune phone number ID for this conversation
+    """
+    from urllib.parse import quote
+    return _fmt(
+        _get(
+            f"/v1/sms/conversations/{quote(remote_number, safe='')}",
+            {"phone_number_id": phone_number_id},
+        )
+    )
+
+
+@mcp.tool()
+def search_sms(
+    query: str,
+    phone_number_id: Optional[str] = None,
+    limit: int = 20,
+) -> str:
+    """Semantic search across SMS messages.
+
+    Returns matching messages with body, direction, and timestamps.
+
+    Args:
+        query: Search query (searches message content)
+        phone_number_id: Scope search to a specific phone number (optional)
+        limit: Max results, 1-100 (default: 20)
+    """
+    params: dict[str, Any] = {"q": query, "limit": limit}
+    if phone_number_id:
+        params["phone_number_id"] = phone_number_id
+    return _fmt(_get("/v1/sms/search", params))
+
+
+
+@mcp.tool()
+def set_phone_number_webhook(
+    phone_number_id: str,
+    endpoint: str,
+    secret: Optional[str] = None,
+    events: Optional[list[str]] = None,
+) -> str:
+    """Configure a webhook for a phone number to receive SMS event notifications.
+
+    When set, Commune will POST to your endpoint on sms.received and sms.sent events.
+
+    Args:
+        phone_number_id: The phone number ID (from list_phone_numbers)
+        endpoint: HTTPS URL to receive webhook payloads
+        secret: Optional webhook signing secret for payload verification
+        events: Event types to subscribe to (default: ["sms.received", "sms.sent"])
+    """
+    webhook: dict[str, Any] = {"endpoint": endpoint}
+    if secret is not None:
+        webhook["secret"] = secret
+    if events is not None:
+        webhook["events"] = events
+    resp = httpx.patch(
+        f"{BASE_URL}/v1/phone-numbers/{phone_number_id}",
+        headers=_headers(),
+        json={"webhook": webhook},
+        timeout=30,
+    )
+    resp.raise_for_status()
+    body = resp.json()
+    return _fmt(body.get("data", body) if isinstance(body, dict) else body)
+
+
+@mcp.tool()
+def set_phone_number_allow_list(
+    phone_number_id: str,
+    numbers: list[str],
+) -> str:
+    """Set the allow list for a phone number (only these numbers can send SMS to it).
+
+    Replaces the existing allow list. Pass an empty list to clear it.
+
+    Args:
+        phone_number_id: The phone number ID (from list_phone_numbers)
+        numbers: List of E.164 phone numbers to allow, e.g. ["+15551234567"]
+    """
+    return _fmt(_put(f"/v1/phone-numbers/{phone_number_id}/allow-list", {"numbers": numbers}))
+
+
+@mcp.tool()
+def set_phone_number_block_list(
+    phone_number_id: str,
+    numbers: list[str],
+) -> str:
+    """Set the block list for a phone number (these numbers are rejected).
+
+    Replaces the existing block list. Pass an empty list to clear it.
+
+    Args:
+        phone_number_id: The phone number ID (from list_phone_numbers)
+        numbers: List of E.164 phone numbers to block, e.g. ["+15551234567"]
+    """
+    return _fmt(_put(f"/v1/phone-numbers/{phone_number_id}/block-list", {"numbers": numbers}))
+
+
+@mcp.tool()
+def list_sms_suppressions(
+    phone_number_id: Optional[str] = None,
+) -> str:
+    """List phone numbers suppressed from receiving SMS (opted out via STOP keyword).
+
+    Args:
+        phone_number_id: Filter by phone number ID (optional, lists all if omitted)
+    """
+    params: dict[str, Any] = {}
+    if phone_number_id:
+        params["phone_number_id"] = phone_number_id
+    return _fmt(_get("/v1/sms/suppressions", params))
+
+
+@mcp.tool()
+def remove_sms_suppression(phone_number: str) -> str:
+    """Remove a phone number from the SMS suppression list (re-enable SMS delivery).
+
+    Use this when a user sends UNSTOP or contacts support to re-subscribe.
+
+    Args:
+        phone_number: The E.164 phone number to remove from suppressions, e.g. "+15551234567"
+    """
+    from urllib.parse import quote
+    encoded = quote(phone_number, safe="")
+    return _fmt(_delete(f"/v1/sms/suppressions/{encoded}"))
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# CREDITS TOOLS
+# ═════════════════════════════════════════════════════════════════════════════
+
+
+@mcp.tool()
+def get_credit_balance() -> str:
+    """Get current credit balance for your Commune account.
+
+    Returns included credits, purchased credits, total available, and credits used this billing cycle.
+    """
+    return _fmt(_get("/v1/credits"))
+
+
+@mcp.tool()
+def list_credit_bundles() -> str:
+    """List available credit bundles that can be purchased.
+
+    Returns each bundle's ID, credit amount, price, and description.
+    """
+    return _fmt(_get("/v1/credits/bundles"))
+
+
+@mcp.tool()
+def credits_checkout(bundle: str, return_url: Optional[str] = None) -> str:
+    """Create a Stripe checkout session to purchase a credit bundle.
+
+    Returns a checkout_url to open in the browser to complete payment.
+    Valid bundles: "starter", "growth", "scale".
+
+    Args:
+        bundle: The bundle ID to purchase — "starter", "growth", or "scale"
+        return_url: URL to redirect to after payment (optional)
+    """
+    payload: dict[str, Any] = {"bundle": bundle}
+    if return_url:
+        payload["return_url"] = return_url
+    return _fmt(_post("/v1/credits/checkout", payload))
 
 
 # ═════════════════════════════════════════════════════════════════════════════

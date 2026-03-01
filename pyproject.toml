@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "commune-mcp"
-version = "0.1.2"
+version = "0.1.8"
 description = "MCP server for Commune – email infrastructure for agents. Set up an inbox and send your first email in 30 seconds. Programmatic inboxes, consistent threads, custom domains, attachments, and structured data."
 readme = "README.md"
 license = "MIT"
