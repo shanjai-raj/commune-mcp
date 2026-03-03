@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shanjai-raj/commune-mcp",
   "title": "Commune",
-  "description": "Email and SMS MCP server for AI agents — send and receive email, search inboxes, manage programmatic inboxes, provision phone numbers, and send SMS. 41 tools built for agents, not humans.",
+  "description": "Email and SMS MCP server for AI agents — 41 tools for inboxes, sending, search, and SMS.",
   "repository": {
     "url": "https://github.com/shanjai-raj/commune-mcp",
     "source": "github"
