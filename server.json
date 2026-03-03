@@ -7,13 +7,13 @@
     "url": "https://github.com/shanjai-raj/commune-mcp",
     "source": "github"
   },
-  "version": "0.1.8",
+  "version": "0.1.9",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "commune-mcp",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
