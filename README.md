@@ -881,6 +881,26 @@ Yes. Commune uses organizations — multiple team members can share the same acc
 | `COMMUNE_API_KEY` | **Yes** | Your API key (starts with `comm_`) |
 | `COMMUNE_BASE_URL` | No | Override API URL (default: Commune cloud) |
 
+---
+
+## Ecosystem
+
+This MCP server is one part of a three-repo ecosystem:
+
+| Repo | What it is | When to use it |
+|------|-----------|----------------|
+| **commune-mcp** (this repo) | MCP server | Claude Desktop, Cursor, Windsurf, or any MCP client |
+| **[commune-mail](https://github.com/shanjai-raj/commune-python)** | Python SDK | Building a Python agent directly (LangChain, CrewAI, LangGraph) |
+| **[commune-ai](https://github.com/shanjai-raj/commune-ai)** | TypeScript SDK | Building in Node.js, Deno, or Bun |
+| **[commune-cookbook](https://github.com/shanjai-raj/commune-cookbook)** | Examples + notebooks | Working code for every framework |
+
+**Where to go next:**
+- Want to use email in Python code instead? → [`commune-mail`](https://github.com/shanjai-raj/commune-python)
+- Want complete agent examples? → [`commune-cookbook/00_START_HERE.md`](https://github.com/shanjai-raj/commune-cookbook/blob/main/00_START_HERE.md)
+- Something broken? → [`ERRORS.md`](ERRORS.md)
+
+---
+
 ## License
 
 MIT
