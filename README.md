@@ -5,7 +5,7 @@
 [![PyPI](https://img.shields.io/pypi/v/commune-mcp?color=blue&label=PyPI)](https://pypi.org/project/commune-mcp/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/commune-mcp?label=installs%2Fmo)](https://pypi.org/project/commune-mcp/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/commune-mcp/)
-[![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Apache-2.0 License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-compatible-purple)](https://modelcontextprotocol.io)
 [![Works with Claude](https://img.shields.io/badge/works%20with-Claude%20Desktop-orange)](https://claude.ai)
 [![Works with Cursor](https://img.shields.io/badge/works%20with-Cursor-blue)](https://cursor.sh)
@@ -885,23 +885,15 @@ Yes. Commune uses organizations — multiple team members can share the same acc
 
 ## Ecosystem
 
-This MCP server is one part of a three-repo ecosystem:
-
-| Repo | What it is | When to use it |
-|------|-----------|----------------|
-| **commune-mcp** (this repo) | MCP server | Claude Desktop, Cursor, Windsurf, or any MCP client |
-| **[commune-mail](https://github.com/shanjai-raj/commune-python)** | Python SDK | Building a Python agent directly (LangChain, CrewAI, LangGraph) |
-| **[commune-ai](https://github.com/shanjai-raj/commune-ai)** | TypeScript SDK | Building in Node.js, Deno, or Bun |
-| **[commune-cookbook](https://github.com/shanjai-raj/commune-cookbook)** | Examples + notebooks | Working code for every framework |
-
-**Where to go next:**
-- Want to use email in Python code instead? → [`commune-mail`](https://github.com/shanjai-raj/commune-python)
-- Want complete agent examples? → [`commune-cookbook/00_START_HERE.md`](https://github.com/shanjai-raj/commune-cookbook/blob/main/00_START_HERE.md)
-- Something broken? → [`ERRORS.md`](ERRORS.md)
-
----
+| Package | Description |
+|---------|-------------|
+| [commune](https://github.com/shanjai-raj/commune) | Email & SMS infrastructure — self-hostable backend |
+| [commune-ai](https://github.com/shanjai-raj/commune-ai) | TypeScript/Node.js SDK |
+| [commune-python](https://github.com/shanjai-raj/commune-python) | Python SDK |
+| **[commune-mcp](https://github.com/shanjai-raj/commune-mcp)** | **MCP server for Claude Desktop, Cursor, Windsurf** |
+| [commune-cli](https://github.com/shanjai-raj/commune-cli) | Command-line interface |
 
 ## License
 
-MIT
+Apache-2.0
 
