@@ -32,7 +32,7 @@ from mcp.server.fastmcp import FastMCP
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
-MCP_VERSION = "0.1.6"
+MCP_VERSION = "0.2.0"
 API_VERSION = "v1"  # Commune API version this MCP is tested against
 MIN_API_VERSION = "v1"  # Minimum compatible API version
 
