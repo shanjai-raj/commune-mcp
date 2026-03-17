@@ -71,7 +71,7 @@ Get your API key from the [Commune dashboard](https://commune.email).
 2. If it was rotated or deleted, create a new one and update your MCP config.
 3. Make sure there are no extra spaces or newlines in the key value — copy it fresh from the dashboard.
 
-If the error message says `403 Forbidden` rather than `401 Unauthorized`, your key may lack permissions for the operation. Admin-gated operations (like phone number provisioning) require a key with admin-level access.
+If the error message says `403 Forbidden` rather than `401 Unauthorized`, your key may lack permissions for the operation. Admin-gated operations require a key with admin-level access.
 
 ---
 

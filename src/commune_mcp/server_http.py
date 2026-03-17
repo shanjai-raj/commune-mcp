@@ -26,10 +26,10 @@ from commune_mcp.server import _api_key_ctx, mcp
 # ── Well-known server card (Smithery discovery) ───────────────────────────────
 
 _SERVER_CARD = {
-    "name": "Commune Email & SMS",
+    "name": "Commune Email",
     "description": (
-        "Email and SMS infrastructure for AI agents. "
-        "Create inboxes, send email, read threads, provision phone numbers, send SMS."
+        "Email infrastructure for AI agents. "
+        "Create inboxes, send email, read threads, search, and triage."
     ),
     "vendor": "Commune",
     "version": "0.1.2",

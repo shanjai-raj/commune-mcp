@@ -11,14 +11,13 @@
 [![Works with Cursor](https://img.shields.io/badge/works%20with-Cursor-blue)](https://cursor.sh)
 [![commune.email](https://img.shields.io/badge/docs-commune.email-blue)](https://commune.email/?ref=commune-mcp)
 
-Give Claude (or any MCP client) a real email inbox and SMS. Install in 30 seconds — no cloning required.
+Give Claude (or any MCP client) a real email inbox. Install in 30 seconds — no cloning required.
 
 Your AI agent can:
 - **Read email** — list threads, search by topic, get full message history
 - **Send email** — reply in existing threads, compose fresh messages, attach files
 - **Manage inboxes** — create programmatic inboxes, set up custom domains, triage with tags and status
 - **Track delivery** — get delivery stats, suppression lists, bounce and complaint events
-- **Send and receive SMS** — provision phone numbers, send messages, search SMS history
 
 Works with Claude Desktop, Cursor, Windsurf, or any [MCP](https://modelcontextprotocol.io) client.
 
@@ -55,7 +54,7 @@ https://commune--commune-dev.run.tools
 
 ## Example prompts
 
-Once configured, you can give your AI assistant natural language instructions for email and SMS:
+Once configured, you can give your AI assistant natural language instructions for email:
 
 **Reading email:**
 - "Check my support inbox for new emails"
@@ -76,12 +75,6 @@ Once configured, you can give your AI assistant natural language instructions fo
 - "Mark all threads older than 30 days with no reply as closed"
 - "Show me the deliverability stats for the past 7 days"
 - "List all suppressed email addresses in the support inbox"
-
-**SMS:**
-- "Provision a phone number for my agent"
-- "Send an SMS to +14155551234 saying 'Your order has shipped'"
-- "Show me all my SMS conversations"
-- "Search my SMS messages for anything about delivery issues"
 
 **Domain and inbox management:**
 - "Create a new inbox called 'billing' under example.com"
@@ -634,177 +627,6 @@ Get a temporary download URL for an attachment.
 
 ---
 
-### Phone Number Tools
-
-Manage provisioned phone numbers for SMS.
-
-#### `list_phone_numbers`
-
-List all provisioned phone numbers in your account.
-
-**Parameters:** None
-
----
-
-#### `get_phone_number`
-
-Get details for a single provisioned phone number.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID from `list_phone_numbers` |
-
----
-
-#### `list_available_phone_numbers`
-
-Browse available phone numbers before purchasing.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | `str` | No | `"TollFree"` (default) or `"Local"` |
-| `country` | `str` | No | Two-letter country code (default: `"US"`) |
-| `limit` | `int` | No | Max results (default: 10) |
-
----
-
-#### `provision_phone_number`
-
-Purchase a phone number for SMS. Deducts credits from your balance.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number` | `str` | No | Specific E.164 number to buy (auto-selected if omitted) |
-| `type` | `str` | No | `"tollfree"` (default) or `"local"` |
-| `friendly_name` | `str` | No | Human-readable label |
-
----
-
-#### `update_phone_number`
-
-Update a phone number's friendly name or auto-reply message.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID |
-| `friendly_name` | `str` | No | Human-readable label |
-| `auto_reply` | `str` | No | Auto-reply text for all inbound SMS (empty string to disable) |
-
----
-
-#### `release_phone_number`
-
-Release a provisioned phone number back to the pool. No credit refund. Message history is retained.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID to release |
-
----
-
-#### `set_phone_number_webhook`
-
-Configure a webhook for a phone number to receive SMS event notifications.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID |
-| `endpoint` | `str` | Yes | HTTPS URL to receive webhook payloads |
-| `secret` | `str` | No | Webhook signing secret for payload verification |
-| `events` | `list` | No | Event types (default: `["sms.received", "sms.sent"]`) |
-
----
-
-#### `set_phone_number_allow_list`
-
-Set the allow list for a phone number — only these numbers can send SMS to it. Replaces existing list.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID |
-| `numbers` | `list` | Yes | E.164 phone numbers to allow (empty list to clear) |
-
----
-
-#### `set_phone_number_block_list`
-
-Set the block list for a phone number — these numbers are rejected. Replaces existing list.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | Yes | Phone number ID |
-| `numbers` | `list` | Yes | E.164 phone numbers to block (empty list to clear) |
-
----
-
-### SMS Tools
-
-#### `send_sms`
-
-Send an SMS message.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `to` | `str` | Yes | Recipient in E.164 format (e.g. `"+15551234567"`) |
-| `body` | `str` | Yes | SMS message text |
-| `phone_number_id` | `str` | No | Send from a specific phone number (auto-assigned if omitted) |
-
----
-
-#### `list_sms_conversations`
-
-List SMS conversation threads.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | No | Filter by phone number (lists all if omitted) |
-| `limit` | `int` | No | 1–100, default 20 |
-
----
-
-#### `get_sms_thread`
-
-Get all messages in an SMS thread with a specific number.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `remote_number` | `str` | Yes | External phone number in E.164 format |
-| `phone_number_id` | `str` | Yes | Your Commune phone number ID |
-
----
-
-#### `search_sms`
-
-Semantic search across SMS messages.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `query` | `str` | Yes | Search query |
-| `phone_number_id` | `str` | No | Scope to a specific phone number |
-| `limit` | `int` | No | 1–100, default 20 |
-
----
-
-#### `list_sms_suppressions`
-
-List phone numbers suppressed from receiving SMS (opted out via STOP keyword).
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number_id` | `str` | No | Filter by phone number (lists all if omitted) |
-
----
-
-#### `remove_sms_suppression`
-
-Remove a phone number from the SMS suppression list (re-enable SMS delivery).
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `phone_number` | `str` | Yes | E.164 phone number to remove from suppressions |
-
----
-
 ### Credits Tools
 
 #### `get_credit_balance`
@@ -887,7 +709,7 @@ Yes. Commune uses organizations — multiple team members can share the same acc
 
 | Package | Description |
 |---------|-------------|
-| [commune](https://github.com/shanjai-raj/commune) | Email & SMS infrastructure — self-hostable backend |
+| [commune](https://github.com/shanjai-raj/commune) | Email infrastructure — self-hostable backend |
 | [commune-ai](https://github.com/shanjai-raj/commune-ai) | TypeScript/Node.js SDK |
 | [commune-python](https://github.com/shanjai-raj/commune-python) | Python SDK |
 | **[commune-mcp](https://github.com/shanjai-raj/commune-mcp)** | **MCP server for Claude Desktop, Cursor, Windsurf** |

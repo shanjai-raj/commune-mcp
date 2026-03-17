@@ -1,8 +1,8 @@
 # commune-mcp
 
-> MCP server that gives AI assistants (Claude, Cursor, Windsurf) email and SMS capabilities via 41 tools.
+> MCP server that gives AI assistants (Claude, Cursor, Windsurf) email capabilities via tools.
 
-commune-mcp is a Model Context Protocol server. Install it with `uvx commune-mcp` and configure in your MCP client. Your AI assistant can then send email, read threads, search conversations, provision phone numbers, and send SMS.
+commune-mcp is a Model Context Protocol server. Install it with `uvx commune-mcp` and configure in your MCP client. Your AI assistant can then send email, read threads, and search conversations.
 
 ## When to use
 
@@ -11,7 +11,6 @@ Use commune-mcp when:
 - Building a workflow where an AI assistant manages an email inbox
 - The user wants to give verbal/text instructions for email operations
 - Interactive email management through an AI chat interface
-- An agent needs to provision a phone number and send or receive SMS
 - A user wants to triage, tag, or route email threads conversationally
 
 ## Install
@@ -33,7 +32,7 @@ Add to ~/Library/Application Support/Claude/claude_desktop_config.json:
   }
 }
 
-## 41 available tools
+## Available tools
 
 ### Domain tools
 list_domains, create_domain, get_domain_records, verify_domain
@@ -53,15 +52,6 @@ get_deliverability_stats, get_suppressions, get_delivery_events
 ### Message tools
 send_email, upload_attachment, get_attachment_url
 
-### Phone number tools
-list_phone_numbers, get_phone_number, update_phone_number,
-list_available_phone_numbers, provision_phone_number, release_phone_number,
-set_phone_number_webhook, set_phone_number_allow_list, set_phone_number_block_list
-
-### SMS tools
-send_sms, list_sms_conversations, get_sms_thread, search_sms,
-list_sms_suppressions, remove_sms_suppression
-
 ### Credits tools
 get_credit_balance, list_credit_bundles, credits_checkout
 
@@ -70,8 +60,6 @@ get_credit_balance, list_credit_bundles, credits_checkout
 - "Check my support inbox for new emails"
 - "Reply to John's email saying we'll process his refund within 48 hours"
 - "Tag this thread as urgent and assign it to billing"
-- "Send an SMS to +14155551234 saying your order has shipped"
-- "Provision a toll-free phone number for my agent"
 - "Search for all emails about the payment issue from last month"
 - "Show me deliverability stats for the past 7 days"
 - "Create a new inbox called billing under example.com"

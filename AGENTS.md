@@ -4,7 +4,7 @@ This file is for AI coding assistants (Claude Code, Cursor, Copilot, etc.) worki
 
 ## What this repo is
 
-`commune-mcp` is the [Model Context Protocol](https://modelcontextprotocol.io) server for [Commune](https://commune.email). It wraps the Commune REST API as MCP tools, so Claude Desktop, Cursor, Windsurf, and other MCP clients can read/send email and SMS via natural language.
+`commune-mcp` is the [Model Context Protocol](https://modelcontextprotocol.io) server for [Commune](https://commune.email). It wraps the Commune REST API as MCP tools, so Claude Desktop, Cursor, Windsurf, and other MCP clients can read/send email via natural language.
 
 It is **not** a general-purpose MCP example. It is production infrastructure — changes here go to a live Smithery-published server used by real users.
 
